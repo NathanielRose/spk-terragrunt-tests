@@ -4,6 +4,6 @@ inputs = {
     agent_vm_count           = "3"
     dns_prefix               = "spk-dns-prefix"
     vnet_name                = "spk-vnet"
-    service_principal_id          = "${get_env("AZURE_SUBSCRIPTION_ID", "")}"
-    service_principal_secret      = "${get_env("AZURE_SUBSCRIPTION_SECRET", "")}"
+    service_principal_id          = "${get_env("AZURE_CLIENT_ID", "")}"
+    service_principal_secret      = "${get_env("AZURE_CLIENT_SECRET", "")}"
 }

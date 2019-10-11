@@ -2,6 +2,14 @@
 
 Terragrunt is a thin wrapper for Terraform that provides extra tools for keeping your Terraform configurations DRY (Dont Repeat Yourself), working with multiple Terraform modules, and managing remote state. This repository is an investigation on the feasibility of using terragrunt for infrastructure scaffolding and generation detailed in the [Bedrock CLI Northstar](https://github.com/CatalystCode/bedrock-end-to-end-dx).
 
+### Prerequisites
+
+1. [Install Terraform](https://www.terraform.io/intro/getting-started/install.html).
+
+1. Install Terragrunt by going to the [Releases Page](https://github.com/gruntwork-io/terragrunt/releases),
+   downloading the binary for your OS, renaming it to `terragrunt`, and adding it to your PATH.
+     * See the [Install Terragrunt](#install-terragrunt) docs for other installation options.
+
 ## Recursive Child Templates
 
 Terragrunt configuration uses the exact language, HCL, as Terraform. We will use this to propogate common template configuration variables to child templates.
@@ -15,10 +23,10 @@ Terragrunt configuration uses the exact language, HCL, as Terraform. We will use
         │    ├── main.tf
         │    ├── terragrunt.hcl
         │    └── variables.tf
-        |── azure-simple-west (deployment)
-        │    ├── main.tf
-        │    ├── terragrunt.hcl
-        │    └── variables.tf
+        └── azure-simple-west (deployment)
+             ├── main.tf
+             ├── terragrunt.hcl
+             └── variables.tf
 ```
 
 A few things to note:
@@ -64,8 +72,58 @@ Then run a `terraform plan` in each deployment fold and confirm the configuratio
 
 ## Backend State
 
+Similarly, BackendStates can be propagated from parent to child directory for terraform template deployments.
+```
+└── backend-state
+    └── azure-simple (base)
+        ├── main.tf
+        ├── terragrunt.hcl
+        ├── variables.tf
+        └── azure-simple-west (deployment)
+             ├── main.tf
+             ├── terragrunt.hcl
+             └── variables.tf
+```
+In our **base** template we add the remote configuration block for our Azure backend to store states. Here we omit the statekey name or pass a default name to be later replaced by a child deployment `tfstatekey`.
+ ``` go
+ inputs = {
+    # BYO Resource Group
+    resource_group_name      = "nr-spk-infra-tests-rg"
+    agent_vm_count           = "3"
+    dns_prefix               = "spk-dns-prefix"
+    vnet_name                = "spk-vnet"
+    service_principal_id          = "${get_env("AZURE_CLIENT_ID", "")}"
+    service_principal_secret      = "${get_env("AZURE_CLIENT_SECRET", "")}"
+}
+remote_state {
+    backend = "azurerm"
+        config = {
+            resource_group_name  = "${get_env("AZURE_BACKEND_RG_NAME", "")}"
+            storage_account_name = "${get_env("AZURE_BACKEND_STORAGE_NAME", "")}"
+            container_name       = "${get_env("AZURE_BACKEND_CONTAINER_NAME", "")}"
+            key                  = "spk.terraform.tfstate"
+    }
+}
+```
+
+Now in our aour `include` configuration for our deployment templater, we pass an additional terraform variable for `key` to swap out with the base backend key.
+```go
+include {
+  path = find_in_parent_folders()
+}
+
+inputs = {
+    cluster_name             = "backend-spk-store"
+    ssh_public_key           = "public-key"
+    gitops_ssh_url           = "git@github.com:timfpark/fabrikate-cloud-native-manifests.git"
+    gitops_ssh_key           = "<path to private gitops repo key>"
+    key                       = "spkTESTER.terraform.tfstate"
+}
+```
 
 ## Multiple Template Environments
 
+## Using Private Repos
 
-## Embedding in
+
+## Embedding in SPK
