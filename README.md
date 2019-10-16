@@ -271,7 +271,8 @@ Note: In automated pipelines, you may need to run the following command for your
 ```
 $ ssh -T -oStrictHostKeyChecking=accept-new git@github.com || true
 ```
-**TODO:** Test with VSTS
+
+> **For an Azure Devops Private Repo:** Use `http` for the source url you wish to use for the terraform source template url. Be sure to generate alternative credentials and use the user login generated when prompted. For more information on how to configure alternative credentials for Azure DevOps Repos check out this [article](https://docs.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops). We will work to understand how a more secure method for repo access can be used for terraform.
 
 ## Embedding in SPK
 
