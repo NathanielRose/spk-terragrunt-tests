@@ -8,6 +8,7 @@ Terragrunt is a thin wrapper for Terraform that provides extra tools for keeping
 4. [Multiple Template Environments](#multiple-template-environments)
 5. [Embedding in SPK](#embedding-in-spk)
 6. [Issues with Terragrunt Approach](#issues-with-terragrunt-approach)
+7. [`spk infra` Vision](/SPK-Infra.md)
 
 ## Prerequisites
 
