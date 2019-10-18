@@ -36,7 +36,7 @@ Additional Thoughts:
 #### Targeted Common Scenarios
 - **Update Infrastructure Config & Modifications** - Using `spk infra update` to update Terragrunt HCL files based on args in a provided template folder (Leaf Deployments). `spk infra update` should be provided an argument (e.g. --template hcl-file / or var) that will pass the path to the leaf deployment definition to either update the hcl file or a var within the hcl file. 
 
-> Example: `spk infra update --template "~/discover-service/cluster-west" --cluster-name "new-cluster-name"`
+> Example: `spk infra update --template "~/discover-service/cluster-west" --vars "[cluster-name=new-cluster-name, vnet=mynewvnet]"`
 
 - **Update Partial Leaf Deployments / Migrating Base** - Using `spk infra update` to create a new base for a subset of leafs to be migrated to a new common configuration for deployment.
 
