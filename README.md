@@ -136,19 +136,16 @@ For Multiple terraform deployments that require dependency, terragrunt provides 
 
 In this example we have 2 deployments, `azure-common-infra` and `azure-single-keyvault` where the latter template is dependent on the former. This template requires not only the input but also the output of `azure-common-infra`.
 ```
-└── multiple-cluster
-    ├── azure-common-infra (base)
-    |    ├── README.md
-    |    ├── terragrunt.hcl
-    |    ├── azure-common-infra-west (deployment)
-    |    │    ├── main.tf
-    |    │    ├── terragrunt.hcl
-    |    │    ├── variables.tf
-    |    │    ├── vnet.tf
-    |    │    ├── keyvault.tf
-    └── azure-single-keyvault (base)
+└── multi-cluster
+    └── azure-common-infra (base)
          ├── README.md
          ├── terragrunt.hcl
+         ├── azure-common-infra-west (deployment)
+         │    ├── main.tf
+         │    ├── terragrunt.hcl
+         │    ├── variables.tf
+         │    ├── vnet.tf
+         │    ├── keyvault.tf
          ├── azure-single-keyvault-west (deployment)
          |    ├── main.tf
          |    ├── terragrunt.hcl
@@ -189,19 +186,12 @@ remote_state {
 }
 ```
 
-For the `auze-single-keyvault` we require the output and the input names that were used to deploy the other template.
+For the `azure-single-keyvault` we require the output and the input names that were used to deploy the other template.
 
-Here we can use a `dependency` block to identify the path to the `azure-common-infra` template to pass in the inputs, and the oututs. Additionally we can leverage `mock_outputs` for validation purposes for so we dont have to actually deploy `azure-common-infra` to see if `azure-single-keyvault` template has been configured correctly.
+Here we can use a `dependency` block to identify the path to the `azure-common-infra` template to pass the outputs. Additionally we can leverage `mock_outputs` for validation purposes for so we dont have to actually deploy `azure-common-infra` to see if `azure-single-keyvault` template has been configured correctly.
 
 ``` tf
 inputs = {
-    keyvault_resource_group = dependency.azure-common-infra.inputs.global_resource_group_name
-    keyvault_name = dependency.azure-common-infra.inputs.keyvault_name
-    address_space = dependency.azure-common-infra.inputs.address_space
-    subnet_prefixes = dependency.azure-common-infra.inputs.subnet_prefixes
-    vnet_name = dependency.azure-common-infra.inputs.vnet_name
-    vnet_subnet_id = dependency.azure-common-infra.outputs.vnet_subnet_id
-
     agent_vm_count = "3"
     agent_vm_size = "Standard_D4s_v3"
 
