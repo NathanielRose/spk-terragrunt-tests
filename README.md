@@ -149,7 +149,12 @@ In this example we have 2 deployments, `azure-common-infra` and `azure-single-ke
     └── azure-single-keyvault (base)
          ├── README.md
          ├── terragrunt.hcl
-         └── azure-single-keyvault-west (deployment)
+         ├── azure-single-keyvault-west (deployment)
+         |    ├── main.tf
+         |    ├── terragrunt.hcl
+         |    ├── variables.tf
+         |    ├── acr.tf
+         └── azure-single-keyvault-west-v2 (deployment)
               ├── main.tf
               ├── terragrunt.hcl
               ├── variables.tf
@@ -190,9 +195,6 @@ Here we can use a `dependency` block to identify the path to the `azure-common-i
 
 ``` tf
 inputs = {
-    #--------------------------------------------------------------
-    # keyvault, vnet, and subnets are created seperately by azure-common-infra
-    #--------------------------------------------------------------
     keyvault_resource_group = dependency.azure-common-infra.inputs.global_resource_group_name
     keyvault_name = dependency.azure-common-infra.inputs.keyvault_name
     address_space = dependency.azure-common-infra.inputs.address_space
@@ -200,9 +202,6 @@ inputs = {
     vnet_name = dependency.azure-common-infra.inputs.vnet_name
     vnet_subnet_id = dependency.azure-common-infra.outputs.vnet_subnet_id
 
-    #--------------------------------------------------------------
-    # Cluster variables
-    #--------------------------------------------------------------
     agent_vm_count = "3"
     agent_vm_size = "Standard_D4s_v3"
 
@@ -247,6 +246,10 @@ dependency "azure-common-infra" {
   skip_outputs = true
 }
 ```
+
+Once you've specified the dependencies in each terragrunt.hcl file, when you run the terragrunt apply-all or terragrunt destroy-all, Terragrunt will ensure that the dependencies are applied or destroyed, respectively, in the correct order. For the example at the start of this section, the order for the apply-all command would be:
+1. Deploy `azure-common-infra-west`
+2. Deploy `azure-single-keyvault-west` and `azure-single-keyvault-west-v2`in parallel
 
 ## Using Private Repositories
 
