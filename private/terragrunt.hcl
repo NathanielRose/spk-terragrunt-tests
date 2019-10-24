@@ -9,6 +9,6 @@ terraform {
   #source = ".bedrock/cluster/environment/azure-simple"
 
   # Github Public Repository
-  source = "git@github.com:NathanielRose/spk-terragrunt-tests.git//recursive/azure-simple"
+  source = "git@github.com:microsoft/bedrock.git//cluster/environments/azure-simple?"
 }
 
