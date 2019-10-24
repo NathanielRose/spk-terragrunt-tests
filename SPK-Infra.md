@@ -138,6 +138,7 @@ And fills in the `terragrunt.hcl` file with the following `west` specific variab
     }
   }
 }
+```
 
 With this, she now has a directory structure resembling:
 
